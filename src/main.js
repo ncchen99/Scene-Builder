@@ -1,5 +1,4 @@
 import { createApp } from "troisjs";
-import App from "./App.vue";
-import * as THREE from "three";
+import App from "./GLTFLoad.vue";
 
 createApp(App).mount("#app");
