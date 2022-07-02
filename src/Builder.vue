@@ -9,6 +9,8 @@
 <script>
 // import { GridHelper,BoxGeometry,Mesh,MeshBasicMaterial,AmbientLight,TextureLoader,MeshLambertMaterial } from 'three';
 import * as THREE from "three";
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import $ from 'jquery';
 import {
   Camera,
   DirectionalLight,
@@ -31,56 +33,82 @@ export default {
     Scene,
   },
   mounted() {
+  let plane;
+  let pointer, raycaster, isShiftDown = false;
+
+  let rollOverMesh, rollOverMaterial;
+  let cubeGeo, cubeMaterial;
+  var cube;
+
+  const objects = [];
+  const renderer = this.$refs.renderer.renderer;
+  const camera = this.$refs.camera.camera;
+  camera.position.set( 500, 800, 1300 );
+  camera.lookAt( 0, 0, 0 );
+  const scene = this.$refs.scene.scene; 
+  
+  // roll-over helpers
+  const rollOverGeo = new THREE.BoxGeometry( 50, 50, 50 );
+  rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
+  rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+  scene.add( rollOverMesh );
 
 
-    let plane;
-    let pointer, raycaster, isShiftDown = false;
+  // cubes
+  cubeGeo = new THREE.BoxGeometry( 50, 50, 50 );
+  cubeMaterial = new THREE.MeshLambertMaterial( { color: 0xfeb74c} );
 
-    let rollOverMesh, rollOverMaterial;
-    let cubeGeo, cubeMaterial;
+  // grid
+  const grid = new THREE.GridHelper(1000, 20);
+  scene.add( grid );
 
-    const objects = [];
-    const renderer = this.$refs.renderer.renderer;
-    const camera = this.$refs.camera.camera;
-    camera.position.set( 500, 800, 1300 );
-    camera.lookAt( 0, 0, 0 );
-    const scene = this.$refs.scene.scene; 
-    
-    // roll-over helpers
-    const rollOverGeo = new THREE.BoxGeometry( 50, 50, 50 );
-    rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
-    rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
-    scene.add( rollOverMesh );
+  // const axesHelper = new THREE.AxesHelper( 5 );
+  // scene.add( axesHelper );
 
 
-    // cubes
-    cubeGeo = new THREE.BoxGeometry( 50, 50, 50 );
-    cubeMaterial = new THREE.MeshLambertMaterial( { color: 0xfeb74c} );
+	raycaster = new THREE.Raycaster();
+	pointer = new THREE.Vector2();
 
-    // grid
-    const grid = new THREE.GridHelper(1000, 20);
-    scene.add( grid );
+	const geometry = new THREE.PlaneGeometry( 1000, 1000 );
+	geometry.rotateX( - Math.PI / 2 );
 
-		raycaster = new THREE.Raycaster();
-		pointer = new THREE.Vector2();
+	plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+	scene.add( plane );
 
-		const geometry = new THREE.PlaneGeometry( 1000, 1000 );
-		geometry.rotateX( - Math.PI / 2 );
+	objects.push( plane );
 
-		plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
-		scene.add( plane );
+	// lights
 
-		objects.push( plane );
-
-		// lights
-
-		const ambientLight = new THREE.AmbientLight( 0x606060 );
-		scene.add( ambientLight );
+	const ambientLight = new THREE.AmbientLight( 0x606060 );
+	scene.add( ambientLight );
 
     const directionalLight = new THREE.DirectionalLight( 0xffffff );
     directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
     scene.add( directionalLight );
 
+	const fbxLoader = new FBXLoader()
+    fbxLoader.load(
+        "./Cube.fbx",
+        (object) => {
+            // object.traverse(function (child) {
+            //     if ((child as THREE.Mesh).isMesh) {
+            //         // (child as THREE.Mesh).material = material
+            //         if ((child as THREE.Mesh).material) {
+            //             ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).transparent = false
+            //         }
+            //     }
+            // })
+            // object.scale.set(.01, .01, .01)\
+            cube = object.children[0];
+            // scene.add(object)
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+        },
+        (error) => {
+            console.log(error)
+        }
+    )
 
     document.addEventListener( 'pointermove', onPointerMove );
     document.addEventListener( 'pointerdown', onPointerDown );
@@ -89,6 +117,28 @@ export default {
 
     window.addEventListener( 'resize', onWindowResize );
 
+    function saveScene() {
+      var data = [];
+      for(let i = 0; i < objects.length; i++) {
+        data.push({"name": objects[i].name, "position": objects[i].position});
+      }
+      console.log( data);
+      const requestURL = "http://127.0.0.1:5000/submit";
+      $.ajax({
+          url: requestURL,
+          data: JSON.stringify(data),
+          type: "POST",
+          dataType: "json",
+          contentType: "application/json;charset=utf-8",
+          success: function(returnData){
+              console.log(returnData);
+          },
+          error: function(xhr, ajaxOptions, thrownError){
+              console.log(xhr.status);
+              console.log(thrownError);
+          }
+      });
+    }
     function onWindowResize() {
 
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -148,14 +198,17 @@ export default {
 						// create cube
 
 					} else {
-
-						const voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+						// console.log(cube);
+            // console.log(cubeGeo, cubeMaterial);
+						const voxel = new THREE.Mesh( cube.geometry, cube.material );
+            voxel.name = cube.name;
+            voxel.scale.set( 0.5, 0.5, 0.5 );
 						voxel.position.copy( intersect.point ).add( intersect.face.normal );
 						voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
 						scene.add( voxel );
 
 						objects.push( voxel );
-
+            console.log(voxel);
 					}
 
 					render();
@@ -169,7 +222,7 @@ export default {
 				switch ( event.keyCode ) {
 
 					case 16: isShiftDown = true; break;
-
+          case 83: saveScene(); break;
 				}
 
 			}

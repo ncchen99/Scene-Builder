@@ -1,4 +1,4 @@
 import { createApp } from "troisjs";
-import App from "./Scene2GLTF.vue";
+import App from "./Builder.vue";
 
 createApp(App).mount("#app");

@@ -7,11 +7,11 @@ FBXHeaderExtension:  {
 	CreationTimeStamp:  {
 		Version: 1000
 		Year: 2022
-		Month: 6
-		Day: 19
-		Hour: 12
-		Minute: 3
-		Second: 12
+		Month: 7
+		Day: 2
+		Hour: 17
+		Minute: 22
+		Second: 1
 		Millisecond: 0
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.2"
@@ -28,8 +28,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "/home/ncc/桌面/Unity Test/Template/Assets/kn5zcza1_Cube.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "/home/ncc/桌面/Unity Test/Template/Assets/kn5zcza1_Cube.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "/home/ncc/桌面/Unity Test/My project (1)/Assets/6yv5b2pz_Cube.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "/home/ncc/桌面/Unity Test/My project (1)/Assets/6yv5b2pz_Cube.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -75,7 +75,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 94233817834560, "Scene", "Scene" {
+	Document: 94031538421968, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -220,7 +220,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 94233704242496, "Geometry::Scene", "Mesh" {
+	Geometry: 94031537297856, "Geometry::Scene", "Mesh" {
 		Vertices: *24 {
 			a: -50,-50,50,50,-50,50,-50,50,50,50,50,50,-50,50,-50,50,50,-50,-50,-50,-50,50,-50,-50
 		} 
@@ -329,7 +329,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 94233704253104, "Model::Cube", "Mesh" {
+	Model: 94031540061680, "Model::Cube", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -341,7 +341,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 94233802364496, "Material::Default_Material", "" {
+	Material: 94031539979312, "Material::Default_Material", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -362,13 +362,13 @@ Objects:  {
 Connections:  {
 	
 	;Model::Cube, Model::RootNode
-	C: "OO",94233704253104,0
+	C: "OO",94031540061680,0
 	
 	;Material::Default_Material, Model::Cube
-	C: "OO",94233802364496,94233704253104
+	C: "OO",94031539979312,94031540061680
 	
 	;Geometry::Scene, Model::Cube
-	C: "OO",94233704242496,94233704253104
+	C: "OO",94031537297856,94031540061680
 }
 ;Takes section
 ;----------------------------------------------------
